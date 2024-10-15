@@ -11,7 +11,7 @@ export default async function HeaderLayout() {
 
   return (
     <header className="fixed w-full bg-brand-header">
-      <div className="lg-medium relative mx-auto flex max-w-[1440px] items-center px-4 py-[14px] tab:px-6">
+      <div className="lg-medium relative mx-auto flex h-[60px] max-w-[1440px] items-center px-4 tab:px-6">
         {session?.accessToken ? (
           <AuthHeader />
         ) : (
