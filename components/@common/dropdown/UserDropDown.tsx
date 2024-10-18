@@ -1,4 +1,6 @@
-import { ReactNode } from "react";
+"use client";
+
+import { PropsWithChildren } from "react";
 
 import Link from "next/link";
 
@@ -10,19 +12,20 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown";
 
-interface MyMenuDropDown {
-  children: ReactNode;
-  onLogoutHandler: () => void;
+interface UserDropDownProps {
+  actionSignOut: () => Promise<void>;
 }
 
 export default function UserDropDown({
   children,
-  onLogoutHandler,
-}: MyMenuDropDown) {
+  actionSignOut,
+}: PropsWithChildren<UserDropDownProps>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button>{children}</button>
+        <button className="rounded-xl p-2 hover:bg-primary-light">
+          {children}
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -53,10 +56,13 @@ export default function UserDropDown({
               팀 참여
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="p-0" onClick={onLogoutHandler}>
-            <button className="w-full py-3 text-md duration-300 hover:bg-dropDown-default pc:text-lg">
-              로그아웃
-            </button>
+          <DropdownMenuItem className="p-0">
+            <form
+              className="w-full py-3 text-md duration-300 hover:bg-dropDown-default pc:text-lg"
+              action={actionSignOut}
+            >
+              <button className="w-full">로그아웃</button>
+            </form>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

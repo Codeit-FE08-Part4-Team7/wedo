@@ -1,31 +1,49 @@
-import { auth } from "@/auth";
+import { cookies } from "next/headers";
+
 import {
   apiAuthPrefix,
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
-} from "@/routes";
+} from "./routes";
 
-export default auth((req) => {
-  const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
+import type { NextRequest } from "next/server";
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+// This function can be marked `async` if using `await` inside
+export function middleware(request: NextRequest) {
+  const cookieStore = cookies();
+  const accessToken = cookieStore.get("accessToken");
+  const { nextUrl } = request;
+  const { pathname } = nextUrl;
 
-  if (isApiAuthRoute) return;
-  if (isAuthRoute) {
-    if (isLoggedIn)
+  const isLoggedIn = accessToken?.value;
+  const isApiAuth = pathname.startsWith(apiAuthPrefix);
+  const isPublicPath = publicRoutes.includes(pathname);
+  const isAuthPath = authRoutes.includes(pathname);
+
+  if (isApiAuth) return null;
+  if (isAuthPath) {
+    if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-    return;
+    }
+    return null;
   }
 
-  if (!isLoggedIn && !isPublicRoute)
-    return Response.redirect(new URL("/login", nextUrl));
-});
+  if (!isLoggedIn && !isPublicPath) {
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+  }
+  return null;
+}
 
 export const config = {
-  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: ["/((?!api|_next/static|favicon.ico|_next/image|.*\\.png$).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

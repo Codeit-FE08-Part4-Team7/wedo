@@ -1,6 +1,4 @@
 import localFont from "next/font/local";
-import { Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 
 import "@/styles/globals.css";
 import { Toaster } from "@/components/@common/toast/Toaster";
@@ -23,20 +21,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  params: { session },
 }: Readonly<{
   children: React.ReactNode;
-  params: { session: Session };
 }>) {
   return (
     <html lang="ko">
       <body className={`${pretendard.variable} font-pretendard`}>
-        <SessionProvider session={session}>
-          <Providers>
-            {children}
-            <Toaster />
-          </Providers>
-        </SessionProvider>
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

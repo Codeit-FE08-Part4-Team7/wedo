@@ -19,6 +19,7 @@
     ],
     "paths": {
       "@/layout/*": ["./components/layout/*"],
+      "@/@common/*": ["./components/@common/*"],
       "@/ui/*": ["./components/ui/*"],
       "@/apis/*": ["./apis/*"],
       "@/components/*": ["./components/*"],
