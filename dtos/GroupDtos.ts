@@ -1,8 +1,10 @@
+export type GenerateInviteTokenResponse = string;
+
 export interface AcceptInvitationResponse {
   groupId: number;
 }
 
-interface Member {
+export interface Member {
   role: "ADMIN" | "MEMBER";
   userImage: string | null;
   userEmail: string;

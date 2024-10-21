@@ -1,4 +1,5 @@
 import {
+  GenerateInviteTokenResponse,
   AcceptInvitationResponse,
   GetTeamResponse,
   AddTeamResponse,
@@ -9,6 +10,19 @@ import {
 import fetchExtended from "./fetchExtended";
 import { uploadImage } from "./image";
 import { getUser } from "./user";
+
+export async function generateInviteToken(
+  groupId: number,
+): Promise<GenerateInviteTokenResponse> {
+  const res = await fetchExtended(`/groups/${groupId}/invitation`);
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json.message);
+  }
+
+  return json;
+}
 
 export async function acceptInvitation(
   token: string,
@@ -30,6 +44,33 @@ export async function acceptInvitation(
   }
 
   return json;
+}
+
+export async function inviteMemberWithEmail({
+  groupId,
+  email,
+}: {
+  groupId: number;
+  email: string;
+}) {
+  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+    throw new Error("이메일 형식이 올바르지 않습니다.");
+  }
+
+  const res = await fetchExtended(`/groups/${groupId}/member`, {
+    method: "POST",
+    body: JSON.stringify({ userEmail: email }),
+  });
+
+  if (res.status === 204) {
+    return;
+  }
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json.message);
+  }
 }
 
 export async function getTeam({
